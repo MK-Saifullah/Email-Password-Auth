@@ -3,8 +3,11 @@ import './SignUp.css'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { Link } from 'react-router-dom';
-import {createUserWithEmailAndPassword, getAuth, sendEmailVerification} from  'firebase/auth'
+import {createUserWithEmailAndPassword, getAuth, sendEmailVerification, updateProfile} from  'firebase/auth'
 import app from '../../firebase/firebase.init';
+import 'react-toastify/dist/ReactToastify.css';
+// import { Toast } from 'bootstrap';
+import { toast, ToastContainer } from 'react-toastify';
 
 const auth = getAuth(app);
 
@@ -26,7 +29,7 @@ const SignUp = () => {
         const password = form.password.value;
         console.log(name, email, password);
 
-        // Regular expression
+  //Validate password Regular expression
         if(!/(?=.*?[A-Z])/.test(password)){
             setError('Please provide at least one uppercase');
             return;
@@ -48,6 +51,7 @@ const SignUp = () => {
             setSuccess(true);
             form.reset();
             verifyEmail();
+            updateUserName(name)
         })
         .catch((error) => {
             const errorCode = error.code;
@@ -60,9 +64,22 @@ const SignUp = () => {
         const verifyEmail = () => {
             sendEmailVerification(auth.currentUser)
             .then( () => {
-                alert('Please check your mail and verify it')
+                // alert('Please check your mail and verify it')
                 // you may use toast
+                toast('Please check your mail and verify it')
+                
             })
+        }
+// Update Profile
+        const updateUserName = (name) => {
+            updateProfile(auth.currentUser, {
+                displayName: name,
+            })
+            .then( () => {
+                console.log('Display Name Updated')
+            })
+            .catch(error => console.error(error))
+
         }
     }
     return (
@@ -91,6 +108,7 @@ const SignUp = () => {
                 <Button variant="primary" type="submit">
                     SignUp/ Register
                 </Button>
+                <ToastContainer></ToastContainer>
             </Form>
             {/* <p className='mt-2'>New to this website?, please <Link to="/register">Register</Link></p>
              */}

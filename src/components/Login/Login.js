@@ -1,8 +1,9 @@
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { Link } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
 import app from '../../firebase/firebase.init';
 import './Login.css'
 
@@ -12,6 +13,7 @@ const Login = () => {
     const [user, setUser] = useState({});
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
+    const [email, setEMail] = useState('');
 
     const handleSubmit = (e) => {
 
@@ -23,6 +25,7 @@ const Login = () => {
         form.reset();
         setSuccess(false)
         setError('');
+        
 
         if(!/(?=.*?[#?!@$%^&*-])/.test(password)){
             setError('Please provide at least one special character')
@@ -41,8 +44,28 @@ const Login = () => {
             console.error(errorMessage);
             setError(errorMessage)
         });
+    }
 
-
+    const handleEmailBlur = (e) => {
+        const email = e.target.value;
+        setEMail(email);
+    }
+//Password Reset
+    const handlePasswordReset = () => {
+        if(!email){
+            toast('Enter your email address')
+            return;
+        }
+        sendPasswordResetEmail(auth, email )
+        .then(() => {
+            // alert('Check your main to get your password reset')
+            toast('Check your email to get your password reset')
+        })
+        .catch(error => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.error(errorCode, errorMessage)
+        })
     }
     return (
         <div className='container w-50 mx-auto rounded p-4 login-container'>
@@ -51,7 +74,7 @@ const Login = () => {
            <Form onSubmit = {handleSubmit}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label>Email address</Form.Label>
-                    <Form.Control type="email" name="email" placeholder="Enter email" required/>
+                    <Form.Control onBlur={handleEmailBlur} type="email" name="email" placeholder="Enter email" required/>
                     <Form.Text className="text-muted">
                     We'll never share your email with anyone else.
                     </Form.Text>
@@ -68,8 +91,9 @@ const Login = () => {
                 <Button variant="primary" type="submit">
                     Login here
                 </Button>
-                
-                <p className='mt-3'>New to this website? please <Link to='/signup'>Sing up/ Register here</Link></p>
+                <ToastContainer></ToastContainer>
+                <p className='mt-3'><small>New to this website? Please <Link to='/signup'>Sing up/ Register here</Link></small></p>
+                <p className='mt-3'><small>Forget your password? Please Enter Email and <button onClick = {handlePasswordReset} type="button" className='btn btn-link'>Reset Password</button></small></p>
             </Form>
         </div>
     );
