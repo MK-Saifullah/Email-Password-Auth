@@ -3,7 +3,7 @@ import './SignUp.css'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { Link } from 'react-router-dom';
-import {createUserWithEmailAndPassword, getAuth} from  'firebase/auth'
+import {createUserWithEmailAndPassword, getAuth, sendEmailVerification} from  'firebase/auth'
 import app from '../../firebase/firebase.init';
 
 const auth = getAuth(app);
@@ -39,7 +39,7 @@ const SignUp = () => {
             setError('Please provide at least one special character')
             return;
         }
-
+// createUserWithEmailAndPassword
         createUserWithEmailAndPassword(auth, email, password)
         .then(userCredential => {
             const user = userCredential.user;
@@ -47,6 +47,7 @@ const SignUp = () => {
             setUser(user)
             setSuccess(true);
             form.reset();
+            verifyEmail();
         })
         .catch((error) => {
             const errorCode = error.code;
@@ -54,6 +55,15 @@ const SignUp = () => {
             console.log(errorCode, errorMessage)
             setError(errorMessage)
           });
+
+//sendEmailVerification
+        const verifyEmail = () => {
+            sendEmailVerification(auth.currentUser)
+            .then( () => {
+                alert('Please check your mail and verify it')
+                // you may use toast
+            })
+        }
     }
     return (
         <div className='container w-50 mx-auto'>
