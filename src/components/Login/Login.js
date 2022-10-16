@@ -59,7 +59,7 @@ const Login = () => {
         sendPasswordResetEmail(auth, email )
         .then(() => {
             // alert('Check your main to get your password reset')
-            toast('Check your email to get your password reset')
+            toast('Check your email to get your password reset mail')
         })
         .catch(error => {
             const errorCode = error.code;

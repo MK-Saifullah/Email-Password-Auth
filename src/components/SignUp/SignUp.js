@@ -67,8 +67,8 @@ const SignUp = () => {
                 // alert('Please check your mail and verify it')
                 // you may use toast
                 toast('Please check your mail and verify it')
-                
             })
+            .catch(error => console.error(error))
         }
 // Update Profile
         const updateUserName = (name) => {
